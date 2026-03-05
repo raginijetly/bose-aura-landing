@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bose Aura | Mastery Over Your Environment</title>
+    <style>
+        /* CSS Variables for Premium Dark Theme */
+        :root {
+            --bg-color: #050505;
+            --surface-color: #121212;
+            --surface-elevated: #1e1e1e;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent-blue: #2b6bf3;
+            --accent-blue-glow: rgba(43, 107, 243, 0.3);
+            --focus-ring: 2px solid #2b6bf3;
+            --transition-speed: 0.4s;
+            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            
+            /* Dynamic variables controlled by JS */
+            --demo-focus-level: 0;
+            --demo-blur: 0px;
+            --demo-dim: 0;
+        }
+
+        /* Reset & Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-stack);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        /* Accessibility: Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        /* Accessibility: Focus States */
+        a:focus-visible, button:focus-visible, input:focus-visible {
+            outline: var(--focus-ring);
+            outline-offset: 4px;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        h1 { font-size: clamp(2.5rem, 5vw, 4.5rem); margin-bottom: 1rem; }
+        h2 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 1.5rem; }
+        h3 { font-size: 1.5rem; margin-bottom: 1rem; }
+        p { font-size: 1.125rem; color: var(--text-secondary); margin-bottom: 1.5rem; }
+        
+        .eyebrow {
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Layout Utilities */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 5%;
+        }
+
+        .section {
+            padding: 8rem 0;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .nav-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 5%;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .btn-primary {
+            background-color: var(--text-primary);
+            color: var(--bg-color);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            background-color: #e0e0e0;
+            transform: scale(1.02);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-primary);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text-primary);
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        /* Image Handling */
+        .img-wrapper {
+            position: relative;
+            width: 100%;
+            background-color: var(--surface-elevated);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 70px;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            border-radius: 0;
+        }
+
+        .hero-bg::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 100%);
+        }
+
+        .hero-content {
+            max-width: 600px;
+        }
+
+        /* Interactive Demo Section */
+        .demo-section {
+            background-color: var(--surface-color);
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .demo-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .demo-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .env-toggles {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .env-btn {
+            background: var(--surface-elevated);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-secondary);
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        .env-btn[aria-pressed="true"] {
+            background: rgba(43, 107, 243, 0.1);
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .dial-container {
+            background: var(--surface-elevated);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .dial-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Custom Range Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+            margin: 10px 0;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: linear-gradient(to right, var(--text-secondary), var(--accent-blue));
+            border-radius: 4px;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: var(--text-primary);
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -9px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            transition: transform 0.1s;
+        }
+
+        input[type=range]:active::-webkit-slider-thumb {
+            transform: scale(1.1);
+        }
+
+        /* Demo Visualizer */
+        .demo-visual {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background-color: #000;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .demo-bg-image {
+            position: absolute;
+            top: -10%; left: -10%; width: 120%; height: 120%;
+            object-fit: cover;
+            filter: blur(var(--demo-blur)) brightness(calc(1 - var(--demo-dim)));
+            transition: filter var(--transition-speed) ease-out, background-color 0.5s ease, background 0.5s ease;
+            background-color: #3d2b1f; /* Default clean abstract background */
+        }
+
+        .demo-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* The 30-degree focus cone */
+        .focus-cone {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            width: 300px;
+            height: 300px;
+            transform-origin: bottom center;
+            transform: translateX(-50%);
+            background: conic-gradient(from 345deg at 50% 100%, 
+                rgba(43, 107, 243, 0) 0deg, 
+                rgba(43, 107, 243, calc(var(--demo-focus-level) * 0.4)) 15deg, 
+                rgba(43, 107, 243, calc(var(--demo-focus-level) * 0.4)) 345deg, 
+                rgba(43, 107, 243, 0) 360deg);
+            clip-path: polygon(50% 100%, 0 0, 100% 0);
+            transition: background var(--transition-speed) ease-out;
+            pointer-events: none;
+        }
+
+        /* Ambient Noise Particles */
+        .noise-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px dashed rgba(255,255,255,calc(0.5 - (var(--demo-focus-level) * 0.5)));
+            transition: border-color var(--transition-speed) ease-out;
+            animation: pulse 4s infinite linear;
+        }
+        .noise-ring:nth-child(1) { width: 40%; height: 40%; animation-delay: 0s; }
+        .noise-ring:nth-child(2) { width: 70%; height: 70%; animation-delay: -1s; }
+        .noise-ring:nth-child(3) { width: 100%; height: 100%; animation-delay: -2s; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* User Avatar in Center */
+        .user-center {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: var(--text-primary);
+            border-radius: 50%;
+            box-shadow: 0 0 20px var(--accent-blue-glow);
+            z-index: 10;
+        }
+
+        /* Target Voice Source */
+        .target-voice {
+            position: absolute;
+            top: 20%;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            opacity: calc(0.3 + (var(--demo-focus-level) * 0.7));
+            box-shadow: 0 0 calc(20px * var(--demo-focus-level)) var(--accent-blue);
+            transition: all var(--transition-speed) ease-out;
+        }
+
+        /* Feature Grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .feature-card {
+            background: var(--surface-elevated);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 2.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--accent-blue);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Deep Dive Section */
+        .deep-dive {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        
+        .deep-dive:nth-child(even) {
+            direction: rtl;
+        }
+        .deep-dive:nth-child(even) > * {
+            direction: ltr;
+        }
+
+        /* Footer / Pricing */
+        .footer-cta {
+            text-align: center;
+            background: var(--surface-color);
+            padding: 6rem 5%;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .price {
+            font-size: 3rem;
+            font-weight: 300;
+            margin: 2rem 0;
+            color: var(--text-primary);
+        }
+
+        .footer-legal {
+            margin-top: 4rem;
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .demo-container, .deep-dive {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+            .deep-dive:nth-child(even) {
+                direction: ltr;
+            }
+            .demo-visual {
+                max-width: 400px;
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-inner">
+            <a href="#" class="logo">BOSE</a>
+            <a href="#preorder" class="btn-primary">Pre-order Aura</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg img-wrapper">
+            <img src="hero_product.png" alt="Product hero image of sleek Bose Aura flagship headphones">
+        </div>
+        <div class="container relative">
+            <div class="hero-content">
+                <span class="eyebrow">The New Standard of Presence</span>
+                <h1>Mastery Over Your Environment.</h1>
+                <p>Today’s noise cancellation forces a binary choice: total isolation or full exposure. Bose Aura gives you contextual acoustic control. Hear what matters. Silence what doesn't.</p>
+                <a href="#explore" class="btn-secondary" style="margin-top: 1rem;">Explore the Tech</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demo Section -->
+    <section id="explore" class="section demo-section">
+        <div class="container">
+            <div class="demo-container">
+                
+                <!-- Controls -->
+                <div class="demo-controls">
+                    <div>
+                        <span class="eyebrow">Interactive Demo</span>
+                        <h2>30° Directional Focus</h2>
+                        <p>Experience the breakthrough Focus Window technology. Using an 8-microphone phased array, Aura isolates speech within a precise 30° forward arc while suppressing the surrounding environment.</p>
+                    </div>
+
+                    <div class="dial-container">
+                        <div class="env-toggles" role="group" aria-label="Select environment">
+                            <button class="env-btn" aria-pressed="true" id="btn-cafe" onclick="setEnvironment('cafe')">Bustling Café</button>
+                            <button class="env-btn" aria-pressed="false" id="btn-office" onclick="setEnvironment('office')">Open Office</button>
+                        </div>
+                        
+                        <div class="dial-header">
+                            <label for="focus-dial" style="font-weight: 600;">Precision Focus Dial</label>
+                            <span id="focus-readout" style="color: var(--accent-blue); font-weight: 600;">Ambient</span>
+                        </div>
+                        <input type="range" id="focus-dial" min="0" max="100" value="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Adjust focus level">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                            <span>Full Awareness</span>
+                            <span>Max Focus</span>
+                        </div>
+                        
+                        <!-- Screen reader live region -->
+                        <div aria-live="polite" class="sr-only" id="sr-announcer" style="position:absolute; width:1px; height:1px; overflow:hidden;">
+                            Focus level set to Ambient. Full environment awareness.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visualizer -->
+                <div class="demo-visual" aria-hidden="true">
+                    <!-- Clean CSS background restored -->
+                    <div class="demo-bg-image" id="demo-bg"></div>
+                    <div class="demo-overlay">
+                        <div class="noise-ring"></div>
+                        <div class="noise-ring"></div>
+                        <div class="noise-ring"></div>
+                        <div class="focus-cone"></div>
+                        <div class="target-voice"></div>
+                        <div class="user-center"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Benefits / Deep Dive -->
+    <section class="section">
+        <div class="container">
+            
+            <!-- Deep Dive 1: Precision Over Silence -->
+            <div class="deep-dive" style="margin-bottom: 8rem;">
+                <div class="img-wrapper" style="aspect-ratio: 4/3;">
+                    <img src="lifestyle_cafe.png" alt="Professional working in a bustling café environment using Bose Aura headphones">
+                </div>
+                <div>
+                    <span class="eyebrow">Precision Over Silence</span>
+                    <h2>Hear What Matters.</h2>
+                    <p>Unlike software-based noise reduction that lags and distorts, Aura relies on a dedicated DSP engine and an 8-microphone hardware array. The result is real-time acoustic transparency. Natural conversation, on demand, without removing your headphones.</p>
+                    <p>Positioned as a professional tool, it delivers measurable focus-retention gains in high-density environments like bustling cafés.</p>
+                </div>
+            </div>
+
+            <!-- Deep Dive 2: Hardware-Level Isolation -->
+            <div class="deep-dive" style="margin-bottom: 8rem;">
+                <div class="img-wrapper" style="aspect-ratio: 4/3;">
+                    <img src="focus_window_diagram.png" alt="Technical diagram showing the 30-degree focus window and 8-microphone array">
+                </div>
+                <div>
+                    <span class="eyebrow">Hardware-Level Isolation</span>
+                    <h2>Sub-5ms Latency. Zero Friction.</h2>
+                    <p>Aura introduces Focus Window technology. Using an advanced 8-microphone phased array, it isolates speech within a precise 30° forward arc while instantly suppressing the surrounding environment.</p>
+                </div>
+            </div>
+
+            <!-- Deep Dive 3: Tactile Precision -->
+            <div class="deep-dive">
+                <div class="img-wrapper" style="aspect-ratio: 4/3;">
+                    <img src="focus_dial_macro.png" alt="Close-up image of the metal precision control dial on Bose Aura headphones">
+                </div>
+                <div>
+                    <span class="eyebrow">Tactile Precision</span>
+                    <h2>Physical Control, Not Gestures.</h2>
+                    <p>We’ve eliminated "unintentional" touch controls. Aura features a weighted, physical Precision Focus Dial. It provides immediate, tactile feedback, allowing you to blindly adjust your environmental awareness with absolute certainty.</p>
+                </div>
+            </div>
+
+            <!-- 3 Key Benefits Grid -->
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                    <h3>Contextual Awareness</h3>
+                    <p>Stop choosing between isolation and connection. The 30° Spotlight lets the voices you need through while crushing the ambient noise you don't.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/></svg>
+                    </div>
+                    <h3>Ecosystem Agnostic</h3>
+                    <p>Bluetooth 5.4 multi-point ensures instant, flawless handoffs between your laptop and phone. No ecosystem lock-in. No pairing friction.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:-32px; background:var(--surface-elevated)"><rect x="2" y="7" width="16" height="10" rx="2" ry="2"/><line x1="22" y1="11" x2="22" y2="13"/></svg>
+                    </div>
+                    <h3>All-Day Endurance</h3>
+                    <p>16-hour continuous Focus Mode battery life. Durable, lived-in construction meant to survive your bag, your commute, and your longest shifts.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer / Pre-order -->
+    <section id="preorder" class="footer-cta">
+        <div class="container">
+            <span class="eyebrow">Reserve Yours</span>
+            <h2>The ultimate tool for the cognitively demanding life.</h2>
+            <div class="price">$549</div>
+            <button class="btn-primary" style="padding: 1rem 3rem; font-size: 1.125rem;">Pre-order Now</button>
+            <p style="margin-top: 1.5rem; font-size: 0.875rem;">Ships Fall 2026. 90-day risk-free trial.</p>
+            
+            <div class="footer-legal">
+                <p>&copy; 2026 Bose Corporation. All rights reserved. "Bose Aura" and "Focus Window" are trademarks of Bose Corporation.</p>
+                <p>Performance metrics based on internal clinical and open-office environment testing.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive JavaScript -->
+    <script>
+        const dial = document.getElementById('focus-dial');
+        const root = document.documentElement;
+        const readout = document.getElementById('focus-readout');
+        const srAnnouncer = document.getElementById('sr-announcer');
+        const demoBg = document.getElementById('demo-bg');
+        
+        // Handle slider changes
+        dial.addEventListener('input', (e) => {
+            const val = e.target.value;
+            const normalized = val / 100;
+            
+            // Update CSS variables for the visualizer
+            root.style.setProperty('--demo-focus-level', normalized);
+            
+            // Calculate blur (max 10px) and dimming (max 60%)
+            root.style.setProperty('--demo-blur', `${normalized * 10}px`);
+            root.style.setProperty('--demo-dim', normalized * 0.6);
+
+            // Update text readout
+            let statusText = "Ambient";
+            if (val > 20 && val <= 60) statusText = "Balanced";
+            if (val > 60 && val <= 90) statusText = "Focused";
+            if (val > 90) statusText = "Max Isolation";
+            
+            readout.textContent = statusText;
+            
+            // Update Screen Reader
+            clearTimeout(window.srTimeout);
+            window.srTimeout = setTimeout(() => {
+                srAnnouncer.textContent = `Focus level set to ${val} percent. Mode: ${statusText}.`;
+            }, 500);
+        });
+
+        // Handle Environment Toggle
+        function setEnvironment(env) {
+            const btnCafe = document.getElementById('btn-cafe');
+            const btnOffice = document.getElementById('btn-office');
+            
+            if (env === 'cafe') {
+                btnCafe.setAttribute('aria-pressed', 'true');
+                btnOffice.setAttribute('aria-pressed', 'false');
+                // Revert to clean CSS color for visualizer
+                demoBg.style.background = "#3d2b1f";
+            } else {
+                btnCafe.setAttribute('aria-pressed', 'false');
+                btnOffice.setAttribute('aria-pressed', 'true');
+                // Use a clean gradient for office
+                demoBg.style.background = "linear-gradient(135deg, #1a1a24 0%, #2a2d34 100%)";
+            }
+            
+            srAnnouncer.textContent = `Environment changed to ${env === 'cafe' ? 'Bustling Café' : 'Open Office'}.`;
+        }
+    </script>
+</body>
+</html>

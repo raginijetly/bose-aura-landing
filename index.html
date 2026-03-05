@@ -78,6 +78,35 @@
             display: block;
         }
 
+        /* Premium Cinematic Animations */
+        .reveal-up {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1), transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        
+        .reveal-blur {
+            opacity: 0;
+            filter: blur(12px);
+            transform: scale(1.05);
+            transition: opacity 1.5s cubic-bezier(0.22, 1, 0.36, 1), filter 1.5s cubic-bezier(0.22, 1, 0.36, 1), transform 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        
+        .is-revealed {
+            opacity: 1 !important;
+            transform: translateY(0) scale(1) !important;
+            filter: blur(0) !important;
+        }
+
+        .hero-cinematic-load {
+            animation: heroLoad 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        @keyframes heroLoad {
+            from { transform: scale(1.1); filter: blur(10px); opacity: 0; }
+            to { transform: scale(1); filter: blur(0); opacity: 1; }
+        }
+
         /* Layout Utilities */
         .container {
             max-width: 1200px;
@@ -470,9 +499,9 @@
         </div>
         <div class="container relative">
             <div class="hero-content">
-                <span class="eyebrow">The New Standard of Presence</span>
-                <h1>Mastery Over Your Environment.</h1>
-                <p>Today’s noise cancellation forces a binary choice: total isolation or full exposure. Bose Aura gives you contextual acoustic control. Hear what matters. Silence what doesn't.</p>
+                <h1 style="margin-bottom: 0.5rem;">Engineered Presence.</h1>
+                <h2 style="font-size: 1.5rem; color: var(--text-secondary); font-weight: 400; margin-bottom: 1.5rem;">Sound. On Your Terms.</h2>
+                <p>Focus on the conversation in front of you — not the noise around you.</p>
                 <a href="#explore" class="btn-secondary" style="margin-top: 1rem;">Explore the Tech</a>
             </div>
         </div>
@@ -672,6 +701,78 @@
             
             srAnnouncer.textContent = `Environment changed to ${env === 'cafe' ? 'Bustling Café' : 'Open Office'}.`;
         }
+
+        // --- Premium Cinematic Scrolling Experience ---
+        document.addEventListener("DOMContentLoaded", () => {
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            // 1. Initial Hero Load Animation
+            const heroImg = document.querySelector('.hero-bg img');
+            if (heroImg && !prefersReducedMotion) {
+                heroImg.classList.add('hero-cinematic-load');
+            }
+
+            // 2. Tag elements for scroll animation
+            const heroElements = document.querySelectorAll('.hero-content > *');
+            heroElements.forEach((el, index) => {
+                el.classList.add('reveal-up');
+                el.style.transitionDelay = `${0.3 + (index * 0.15)}s`; // Staggered delay after hero image loads
+            });
+
+            const sectionElements = document.querySelectorAll('.eyebrow, .deep-dive h2, .deep-dive p, .feature-card, .footer-cta > *, .demo-controls > div');
+            sectionElements.forEach(el => el.classList.add('reveal-up'));
+
+            // Apply cinematic blur reveals to all images except the hero
+            const contentImages = document.querySelectorAll('.img-wrapper:not(.hero-bg) img');
+            contentImages.forEach(img => img.classList.add('reveal-blur'));
+
+            // 3. Setup Intersection Observer
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px 0px -15% 0px', // Trigger slightly before the element fully enters the screen
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-revealed');
+                        observer.unobserve(entry.target); // Animate once and detach
+                    }
+                });
+            }, observerOptions);
+
+            // 4. Observe elements (respecting accessibility settings)
+            document.querySelectorAll('.reveal-up, .reveal-blur').forEach(el => {
+                if (prefersReducedMotion) {
+                    el.classList.add('is-revealed'); // Show instantly if reduced motion is enabled
+                } else {
+                    observer.observe(el);
+                }
+            });
+
+            // 5. Subtle Hero Parallax on Scroll
+            const heroBgContainer = document.querySelector('.hero-bg');
+            let ticking = false;
+
+            window.addEventListener('scroll', () => {
+                if (!prefersReducedMotion && heroBgContainer) {
+                    if (!ticking) {
+                        window.requestAnimationFrame(() => {
+                            const scrollY = window.scrollY;
+                            // Only apply parallax if hero is still in the viewport
+                            if (scrollY < window.innerHeight) {
+                                heroBgContainer.style.transform = `translateY(${scrollY * 0.4}px)`;
+                                // Slight cinematic fade out as user scrolls past
+                                heroBgContainer.style.opacity = 1 - (scrollY / window.innerHeight) * 0.8;
+                            }
+                            ticking = false;
+                        });
+                        ticking = true;
+                    }
+                }
+            }, { passive: true });
+        });
     </script>
 </body>
 </html>
